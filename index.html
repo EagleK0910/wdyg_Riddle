@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隨機驚喜訊息</title>
+    <title>驚喜謎語</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: #000;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
             overflow: hidden;
             height: 100vh;
@@ -33,6 +34,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             opacity: 0;
             padding: 0 20px;
+            z-index: 10;
         }
 
         .island-active {
@@ -54,16 +56,36 @@
             opacity: 1;
             transition-delay: 0.4s;
         }
+
+        .hint-container {
+            margin-top: 120px;
+            color: #888;
+            font-size: 18px;
+            text-align: center;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+
+        .hint-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
 
     <div id="island" class="dynamic-island">
-        <span id="text-box" class="message">正在載入...</span>
+        <span id="text-box" class="message">...</span>
+    </div>
+
+    <div id="hint" class="hint-container">
+        根據謎語猜猜看這個代表什麼東西吧
     </div>
 
     <script>
-        const messages = [
+        const riddles = [
             "什麼東西會上升但不會下降？",
             "每天早上開始時，您通常採取的最初行動是什麼？",
             "我有鑰匙，但打不開鎖。 我是什麼？ ",
@@ -74,14 +96,16 @@
         ];
 
         window.onload = () => {
-            const randomIndex = Math.floor(Math.random() * messages.length);
-            const selectedText = messages[randomIndex];
-            
-            document.getElementById('text-box').innerText = selectedText;
+            const randomIndex = Math.floor(Math.random() * riddles.length);
+            document.getElementById('text-box').innerText = riddles[randomIndex];
 
             setTimeout(() => {
                 document.getElementById('island').classList.add('island-active');
             }, 500);
+
+            setTimeout(() => {
+                document.getElementById('hint').classList.add('hint-visible');
+            }, 1000);
         };
     </script>
 </body>
