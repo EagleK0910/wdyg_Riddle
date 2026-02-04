@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隨機驚喜訊息</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 模擬動態島的容器 */
+        .dynamic-island {
+            position: absolute;
+            top: 10px;
+            width: 120px;
+            height: 35px;
+            background-color: #1a1a1a; /* 稍微深灰，更有質感 */
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            opacity: 0;
+            padding: 0 20px;
+        }
+
+        /* 觸發後的展開狀態 */
+        .island-active {
+            top: 25px;
+            width: 85%;
+            height: 55px;
+            border-radius: 25px;
+            opacity: 1;
+        }
+
+        .message {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+
+        .island-active .message {
+            opacity: 1;
+            transition-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="island" class="dynamic-island">
+        <span id="text-box" class="message">正在載入...</span>
+    </div>
+
+    <script>
+        // 在這裡輸入你想要隨機出現的文字清單
+        const messages = [
+            "✨ 今天的你依然閃閃發光！",
+            "🍀 祝你有個幸運的一天",
+            "☕ 休息一下，喝杯咖啡吧",
+            "🚀 你的目標一定會實現的",
+            "🌈 陰天之後總會有彩虹",
+            "🍎 記得多吃水果，保持健康",
+            "💎 你是獨一無二的存在"
+        ];
+
+        window.onload = () => {
+            // 隨機選取一則訊息
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            const selectedText = messages[randomIndex];
+            
+            // 將文字放入顯示區域
+            document.getElementById('text-box').innerText = selectedText;
+
+            // 延遲 0.5 秒後啟動動態島動畫
+            setTimeout(() => {
+                document.getElementById('island').classList.add('island-active');
+            }, 500);
+        };
+    </script>
+</body>
+</html>
