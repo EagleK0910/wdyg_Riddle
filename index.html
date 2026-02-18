@@ -1,112 +1,245 @@
+<!-- XIUNG Production -->
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>驚喜謎語</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>新春驚喜謎語</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #000;
+            background-color: #050505;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             overflow: hidden;
             height: 100vh;
+            color: white;
+        }
+
+        .background-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,50,50,0.15) 0%, rgba(0,0,0,0) 70%);
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+            50% { transform: translate(20px, -20px); opacity: 0.8; }
         }
 
         .dynamic-island {
             position: absolute;
-            top: 10px;
-            width: 120px;
-            height: 35px;
+            top: 20px;
+            width: 30px;
+            height: 30px;
             background-color: #1a1a1a;
-            border-radius: 20px;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 500;
-            transition: all 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.2);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            opacity: 0;
-            padding: 0 20px;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
             z-index: 10;
+            overflow: hidden;
+            cursor: pointer;
         }
 
         .island-active {
-            top: 25px;
-            width: 85%;
-            height: 55px;
-            border-radius: 25px;
-            opacity: 1;
+            width: 90%;
+            max-width: 400px;
+            height: auto;
+            min-height: 80px;
+            border-radius: 28px;
+            padding: 20px;
+            background-color: #121212;
         }
 
-        .message {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            text-align: center;
+        .island-shrink {
+            transform: scale(0.9);
+            opacity: 0.8;
+        }
+
+        .message-container {
             width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: none; 
         }
 
-        .island-active .message {
+        .island-active .message-container {
+            display: block;
             opacity: 1;
-            transition-delay: 0.4s;
+            animation: fadeIn 0.5s ease 0.4s forwards; 
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #ff3b30; 
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hint-container {
-            margin-top: 120px;
-            color: #888;
-            font-size: 18px;
+            position: absolute;
+            bottom: 50px;
+            color: #666;
+            font-size: 14px;
             text-align: center;
             padding: 20px;
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.8s ease;
+            transition: all 1s ease;
+            letter-spacing: 1px;
         }
 
         .hint-visible {
             opacity: 1;
             transform: translateY(0);
         }
+
+        .refresh-hint {
+            font-size: 12px;
+            color: #444;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease 2s; 
+        }
+        
+        .island-active .refresh-hint {
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
 
+    <div class="background-glow">
+        <div class="glow-circle" style="top: 10%; left: 10%; width: 200px; height: 200px; animation-duration: 12s;"></div>
+        <div class="glow-circle" style="bottom: 20%; right: 10%; width: 300px; height: 300px; animation-duration: 15s; background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, rgba(0,0,0,0) 70%);"></div>
+    </div>
+
     <div id="island" class="dynamic-island">
-        <span id="text-box" class="message">...</span>
+        <div class="message-container">
+            <span id="text-box"></span><span class="cursor"></span>
+            <div class="refresh-hint">點擊切換下一題</div>
+        </div>
     </div>
 
     <div id="hint" class="hint-container">
-        根據謎語猜猜看這個代表什麼東西吧
+        根據謎語猜猜看這個代表什麼東西吧<br>
+        <span style="font-size: 12px; color: #444;">(新年快樂 )</span>
     </div>
 
     <script>
-        const riddles = [
-            "什麼東西會上升但不會下降？",
-            "每天早上開始時，您通常採取的最初行動是什麼？",
-            "我有鑰匙，但打不開鎖。 我是什麼？ ",
-            "當貝克漢姆主罰點球時，他會擊中哪裡？",
-            " 什麼東西一分鐘一次，一瞬間兩次，一千年都沒有？",
-            "在跑步比賽中，如果你超過了第二個人，你會發現自己處於哪個位置？",
-            "沒有翅膀我也能飛翔。 沒有眼睛我也能哭。 每當我走的時候，黑暗就跟著我。 我是什麼？"
-        ];
+        let riddles = [];
+        let isAnimating = false;
 
-        window.onload = () => {
-            const randomIndex = Math.floor(Math.random() * riddles.length);
-            document.getElementById('text-box').innerText = riddles[randomIndex];
-
-            setTimeout(() => {
+        async function fetchRiddles() {
+            try {
+                const response = await fetch('config.json');
+                if (!response.ok) throw new Error('無法讀取設定檔');
+                const data = await response.json();
+                riddles = data.riddles;
+                startRiddleGame();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('text-box').innerText = "請使用 Live Server 開啟網頁以讀取題目檔 (config.json)";
                 document.getElementById('island').classList.add('island-active');
-            }, 500);
+            }
+        }
+
+        // 打字機效果函數
+        function typeWriter(text, elementId, speed = 50) {
+            const element = document.getElementById(elementId);
+            element.innerText = '';
+            let i = 0;
+            isAnimating = true;
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerText += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    isAnimating = false;
+                }
+            }
+            type();
+        }
+
+        function showRandomRiddle() {
+            if (riddles.length === 0) return;
+            if (isAnimating) return; 
+
+            const island = document.getElementById('island');
+            const textBox = document.getElementById('text-box');
+            
+            if (island.classList.contains('island-active')) {
+                island.classList.add('island-shrink');
+                setTimeout(() => {
+                    island.classList.remove('island-shrink');
+                    updateText();
+                }, 200);
+            } else {
+                island.classList.add('island-active');
+                updateText();
+            }
+
+            function updateText() {
+                const randomIndex = Math.floor(Math.random() * riddles.length);
+                setTimeout(() => {
+                    typeWriter(riddles[randomIndex], 'text-box', 60);
+                }, 300);
+            }
+        }
+
+        function startRiddleGame() {
+            setTimeout(() => {
+                showRandomRiddle();
+            }, 800);
 
             setTimeout(() => {
                 document.getElementById('hint').classList.add('hint-visible');
-            }, 1000);
-        };
+            }, 2000);
+        }
+
+        window.onload = fetchRiddles;
+
+        document.getElementById('island').addEventListener('click', () => {
+            if (!isAnimating) {
+                showRandomRiddle();
+            }
+        });
     </script>
 </body>
 </html>
+<!-- XIUNG Production -->
